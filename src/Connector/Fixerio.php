@@ -2,8 +2,9 @@
 
 namespace App\Connector;
 
+use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
-use Psr\Http\Client\ClientInterface;
+use GuzzleHttp\Psr7\Uri;
 use Psr\Log\LoggerInterface;
 use function GuzzleHttp\Psr7\build_query;
 
@@ -11,16 +12,16 @@ class Fixerio implements ConnectorInterface
 {
     const URL = 'http://data.fixer.io/api/latest';
 
-    private $apiKey;
+    private $config;
     private $client;
     private $logger;
 
     public function __construct(
-        string $apiKey,
-        ClientInterface $client,
-        LoggerInterface $logger
+        Client $client,
+        LoggerInterface $logger,
+        array $config
     ) {
-        $this->apiKey = $apiKey;
+        $this->config = $config;
         $this->client = $client;
         $this->logger = $logger;
     }
@@ -31,14 +32,14 @@ class Fixerio implements ConnectorInterface
             $response = $this->client->sendRequest(
                 new Request(
                     'GET',
-                    self::URL . build_query(['access_key' => $this->apiKey])
+                    self::URL . '?' . build_query(['access_key' => $this->config['apiKey']])
                 )
             );
-        } catch (\Exception $e){
+        } catch (\Exception $e) {
             $this->logger->error('Failed to fetch rates for Fixer.io', [
                 'exception' => $e->getMessage(),
             ]);
-            throw $e;
+            return null;
         }
 
         $fixerData = json_decode($response->getBody()->getContents());
