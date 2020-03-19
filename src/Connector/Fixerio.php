@@ -29,22 +29,18 @@ class Fixerio implements ConnectorInterface
     public function getRates()
     {
         try {
-            $response = $this->client->sendRequest(
-                new Request(
-                    'GET',
-                    self::URL . '?' . build_query(['access_key' => $this->config['apiKey']])
-                )
-            );
+            $response = $this->client->get(self::URL . '?' . build_query(['access_key' => $this->config['apiKey']]));
         } catch (\Exception $e) {
             $this->logger->error('Failed to fetch rates for Fixer.io', [
                 'exception' => $e->getMessage(),
             ]);
             return null;
         }
+        $fixerData = json_decode($response->getBody()->getContents(), true);
 
-        $fixerData = json_decode($response->getBody()->getContents());
-        var_dump($fixerData);
-        die;
+        return [
+            $fixerData['base'] => $fixerData['rates']
+        ];
     }
 
 }

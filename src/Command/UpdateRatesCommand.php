@@ -32,10 +32,13 @@ class UpdateRatesCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $newRates = $this->connector->getRates();
-        $this->logger->info('Updates Rates', [
-            'rates' => $newRates
-        ]);
-        file_put_contents('rates.json', json_encode($newRates));
+
+        if ($newRates) {
+            $this->logger->info('Updates Rates', [
+                'rates' => $newRates
+            ]);
+            file_put_contents('rates.json', json_encode($newRates));
+        }
 
         return 1;
     }
