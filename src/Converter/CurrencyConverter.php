@@ -5,20 +5,21 @@ namespace App\Converter;
 class CurrencyConverter
 {
     protected $rates;
-    protected $baseCurrency;
 
-    public function __construct(string $baseCurrency, array $rates)
+    public function __construct(array $rates)
     {
-        $this->baseCurrency = $baseCurrency;
         $this->rates = $rates;
     }
 
-    public function convertTo(string $targetCurrency, float $value): float
+    public function convert(string $baseCurrency, float $value, string $targetCurrency): float
     {
-        if( !isset($this->rates[$targetCurrency]) ){
-            throw new \InvalidArgumentException('Invalid currency given');
+        if( !isset($this->rates[$baseCurrency]) ){
+            throw new \InvalidArgumentException('Invalid base currency given');
+        }
+        if( !isset($this->rates[$baseCurrency][$targetCurrency]) ){
+            throw new \Exception('No known rates for converting between these currencies');
         }
 
-        return $this->rates[$targetCurrency] * $value;
+        return $this->rates[$baseCurrency][$targetCurrency] * $value;
     }
 }

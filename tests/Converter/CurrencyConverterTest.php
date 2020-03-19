@@ -12,9 +12,13 @@ class CurrencyConverterTest extends TestCase
      */
     public function testCurrencyConversion($input, $expectedResults)
     {
-        $currencyConverter = new CurrencyConverter($input['baseCurrency'], $input['rates']);
+        $currencyConverter = new CurrencyConverter($input['rates']);
         foreach ($expectedResults as $targetCurrency => $expectedValue) {
-            $this->assertEquals($expectedValue, $currencyConverter->convertTo($targetCurrency, $input['value']));
+            $this->assertEquals($expectedValue, $currencyConverter->convert(
+                $input['baseCurrency'],
+                $input['value'],
+                $targetCurrency
+            ));
         }
     }
 
@@ -24,12 +28,13 @@ class CurrencyConverterTest extends TestCase
             [
                 [
                     'baseCurrency' => 'EUR',
-                    'targetCurrency' => 'GBP',
                     'value' => 5.00,
                     'rates' => [
-                        'GBP' => 1.2,
-                        'USD' => 1.5,
-                        'CAD' => 0.8
+                        'EUR' => [
+                            'GBP' => 1.2,
+                            'USD' => 1.5,
+                            'CAD' => 0.8
+                        ]
                     ]
                 ],
                 [
