@@ -20,6 +20,8 @@ class CurrencyConverterTest extends TestCase
                 $targetCurrency
             ));
         }
+        $this->expectException(\InvalidArgumentException::class);
+        $currencyConverter->convert('AUS', 5, 'EUR');
     }
 
     public function dataProviderForCurrencyConversion()
